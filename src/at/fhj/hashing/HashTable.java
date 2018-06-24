@@ -255,36 +255,7 @@ public class HashTable {
 			return K1-K2;
 		}
 	}
-
-	private int advBrent (Object mainObj, Object curObj ){
-		int key = curObj.hashCode();
-		int i = calcK1(key);
-		int b;
-		int b2;
-		Object oldObj = null;
-		if (!isFree(i) && table[i].getData().equals(curObj)) {
-			return -1;
-		}
-		if (isFree(i)) {
-			setEntry(i, curObj);
-			return i;
-		}
-		b = calcNewK(i, calcK2(key));
-		if (isFree(b)) {
-			setEntry(b, curObj);
-			return b;
-		}
-		oldObj = getEntry(i);
-		b2 = calcNewK(i, calcK2(oldObj.hashCode()));
-		if (isFree(b2)) {
-			setEntry(b2, curObj);
-			setEntry(i, mainObj);
-			return i;
-		} else {
-			insertBrent(getEntry(i));
-		}
-		return -1;
-	}
+	
 
 	// End implementation
 }
