@@ -49,30 +49,35 @@ public class HashTable {
 	 */
 	public int insert(Object obj) {
 		int key = obj.hashCode();
+		// Begin implementation
 
-		int K1 = calcK1(obj);
-		int K2 = calcK2(obj);
-		int check = 0;
+
+		int K1 = calcK1(obj.hashCode());
+		int K2 = calcK2(obj.hashCode());
 
 		do{
-			if(isEmpty(K1) || isFree(K1)){
+			if(isFree(K1)){
 				setEntry(K1, obj);
 				return K1;
 			}
 
 			else{
-				K1 = K1 - K2;
+				if(!isFree(K1)) {
+					if (table[K1].getData().equals(obj)) {
+						return -1;
+					}
+				}
+				K1 = calcNewK(K1, K2);
 			}
 
-		}while(K1 != calcK1(obj));
+		}while(K1 != calcK1(obj.hashCode()));
 
-		if(K1 == calcK1(obj)){
-			return -1;
-		}else{
-			return K1;
-		}
 
-		// Begin implementation
+
+
+		return -1;
+
+
 
 		 // change it!
 		// End implementation
@@ -86,10 +91,47 @@ public class HashTable {
 	 */
 	public int insertBrent(Object obj) {
 		int key = obj.hashCode();
+		int i = calcK1(key);
+		int b;
+		int b2;
+		Object oldObj = null;
 
 		// Begin implementation
 
-		return -1;  // change it!
+
+			if (!isFree(i) && table[i].getData().equals(obj)) {
+				return -1;
+			}
+			if (isFree(i)) {
+				setEntry(i, obj);
+				return i;
+			}
+			b = calcNewK(i, calcK2(key));
+			if (isFree(b)) {
+				setEntry(b, obj);
+				return b;
+			}
+			oldObj = getEntry(i);
+			b2 = calcNewK(i, calcK2(oldObj.hashCode()));
+			if (isFree(b2)) {
+				setEntry(b2, oldObj);
+				setEntry(i, obj);
+				return i;
+			} else {
+				insertBrent(getEntry(i));
+			}
+
+
+
+
+		if(i == calcK1(obj.hashCode())){
+			return -1;
+		}else{
+			return i;
+		}
+
+
+		// change it!
 		// End implementation
 	}
 	
@@ -101,7 +143,17 @@ public class HashTable {
 	public Object retrieve(int key) {
 		// Begin implementation
 
-		return null;  // change it!
+		for (int i = 0; i <table.length; i++){
+			if(!isFree(i)) {
+				if (table[i].getData().hashCode() == key) {
+					return table[i].getData();
+				}
+			}
+		}
+
+		return null;
+
+		// change it!
 		// End implementation
 	}
 	
@@ -112,7 +164,14 @@ public class HashTable {
 	 */
 	public boolean delete(int key) {
 		// Begin implementation
-
+		for (int i = 0; i < table.length; i++){
+			if(!isFree(i)) {
+				if (table[i].getData().hashCode() == key) {
+					deleteEntry(i);
+					return true;
+				}
+			}
+		}
 		return false;  // change it!
 		// End implementation
 	}
@@ -179,14 +238,52 @@ public class HashTable {
 	// Place your private methods here
 	// Begin implementation
 
-	private int calcK1(Object obj){
-		int k = obj.hashCode()%7;
+	private int calcK1(int hash){
+		int k = hash%table.length;
 		return k;
 	}
 
-	private int calcK2(Object obj){
-		int k = 1+(obj.hashCode()%5);
+	private int calcK2(int hash){
+		int k = 1+(hash%(table.length-2));
 		return k;
+	}
+
+	private int calcNewK(int K1, int K2){
+		if((K1 - K2) < 0){
+			return K1-K2+table.length;
+		}else{
+			return K1-K2;
+		}
+	}
+
+	private int advBrent (Object mainObj, Object curObj ){
+		int key = curObj.hashCode();
+		int i = calcK1(key);
+		int b;
+		int b2;
+		Object oldObj = null;
+		if (!isFree(i) && table[i].getData().equals(curObj)) {
+			return -1;
+		}
+		if (isFree(i)) {
+			setEntry(i, curObj);
+			return i;
+		}
+		b = calcNewK(i, calcK2(key));
+		if (isFree(b)) {
+			setEntry(b, curObj);
+			return b;
+		}
+		oldObj = getEntry(i);
+		b2 = calcNewK(i, calcK2(oldObj.hashCode()));
+		if (isFree(b2)) {
+			setEntry(b2, curObj);
+			setEntry(i, mainObj);
+			return i;
+		} else {
+			insertBrent(getEntry(i));
+		}
+		return -1;
 	}
 
 	// End implementation
