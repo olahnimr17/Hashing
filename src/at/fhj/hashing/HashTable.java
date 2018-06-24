@@ -50,9 +50,31 @@ public class HashTable {
 	public int insert(Object obj) {
 		int key = obj.hashCode();
 
+		int K1 = calcK1(obj);
+		int K2 = calcK2(obj);
+		int check = 0;
+
+		do{
+			if(isEmpty(K1) || isFree(K1)){
+				setEntry(K1, obj);
+				return K1;
+			}
+
+			else{
+				K1 = K1 - K2;
+			}
+
+		}while(K1 != calcK1(obj));
+
+		if(K1 == calcK1(obj)){
+			return -1;
+		}else{
+			return K1;
+		}
+
 		// Begin implementation
-	
-		return -1; // change it!
+
+		 // change it!
 		// End implementation
 	}
 	 
@@ -156,6 +178,16 @@ public class HashTable {
 	
 	// Place your private methods here
 	// Begin implementation
+
+	private int calcK1(Object obj){
+		int k = obj.hashCode()%7;
+		return k;
+	}
+
+	private int calcK2(Object obj){
+		int k = 1+(obj.hashCode()%5);
+		return k;
+	}
 
 	// End implementation
 }
